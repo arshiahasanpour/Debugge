@@ -11,23 +11,31 @@ async function loadTasks() {
         const response = await fetch(apiUrl);
         const data = await response.json();
 
-        tasks = data.slice(5, 10);
+        const newTasks = data.slice(5, 10);
 
-        for (let i in tasks) {
+        const taskListEl = document.getElementById("taskList");
+
+        newTasks.forEach(task => {
+
+            tasks.push(task);
+
             const li = document.createElement("li");
-            li.textContent = tasks[i].title;
+            li.textContent = task.title;
             li.addEventListener("click", function() {
-                removeTask(tasks[i].id);
+                removeTask(task.title);
             });
-            document.getElementById("taskList").appendChild(li);
-        }
+            taskListEl.appendChild(li);
+        });
+
     } catch (err) {
         console.error("Failed to load tasks", err);
     }
 }
 
 async function addTask() {
-    const input = document.getElementById("taskInput").value.trim();
+    const inputEl = document.getElementById("taskInput");
+    const input = inputEl.value.trim();
+
     if (input === "") {
         alert("Please enter a valid task");
         return;
@@ -42,16 +50,25 @@ async function addTask() {
             headers: { "Content-type": "application/json; charset=UTF-8" }
         });
 
-        const saved = response.json();
+        const saved = await response.json();
 
         tasks.push(saved);
 
         const li = document.createElement("li");
         li.textContent = saved.title;
         li.addEventListener("click", function() {
-            removeTask(saved.id);
+            removeTask(saved.title);
         });
         document.getElementById("taskList").appendChild(li);
+
+        inputEl.value = "";
+
+        await fetch(apiUrl + "/" + saved.id, {
+            method: "PATCH",
+            body: JSON.stringify(newTask),
+            headers: { "Content-type": "application/json; charset=UTF-8" }
+        });
+        console.log("Task updated:", newTask);
 
     } catch (err) {
         console.error("Error adding task", err);
