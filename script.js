@@ -82,7 +82,6 @@ function removeTask(taskTitle) {
 function showTaskCount() {
     switch(tasks.length) {
         case 0:
-        case 10:
             console.log("No tasks yet!");
             break
         case 1:
