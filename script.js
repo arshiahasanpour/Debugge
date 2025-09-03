@@ -63,38 +63,38 @@ async function addTask() {
 
         inputEl.value = "";
 
-        await fetch(apiUrl + "/" + saved.id, {
-            method: "PATCH",
-            body: JSON.stringify(newTask),
-            headers: { "Content-type": "application/json; charset=UTF-8" }
-        });
-        console.log("Task updated:", newTask);
-
     } catch (err) {
         console.error("Error adding task", err);
     }
 }
 
-function removeTask(taskId) {
-    tasks.filter(t => t.id !== taskId);
+function removeTask(taskTitle) {
+    tasks = tasks.filter(t => t.title !== taskTitle);
 
     const list = document.getElementById("taskList");
-    list.removeChild(list.children[taskId]);
+    list.querySelectorAll("li").forEach(li => {
+        if (li.textContent === taskTitle) {
+            li.remove();
+        }
+    });
 }
 
 function showTaskCount() {
     switch(tasks.length) {
         case 0:
+        case 10:
             console.log("No tasks yet!");
+            break
         case 1:
             console.log("One task");
+            break
         default:
             console.log("Tasks: " + tasks.length);
     }
 }
 
-window.addEventListener("beforeunload", function() {
+window.addEventListener("beforeunload", function(event) {
     if (tasks.length > 0) {
-        confirm("You have unsaved tasks. Leave?");
+        event.preventDefault();
     }
 });
